@@ -1,2 +1,6 @@
 <nwind-filter map='map' on-letter='onLetter(letter)' selected='selected'></nwind-filter>
-<items-list items='items'></items-list>
+<h2>Products</h2>
+<div class='alert alert-info' ng-show='!items'>
+Please select a letter!
+</div>
+<ui-view></ui-view>

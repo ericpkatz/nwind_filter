@@ -1,95 +1,36 @@
 angular.module('app', ['ui.router'])
-  .config(function($stateProvider){
-    $stateProvider
-      .state('home', {
-        url: '/',
-        template: 'home'
-      })
-      .state('products', {
-        url: '/products/:letter?',
-        templateUrl: '/browser/templates/products.html',
-        controller: function($scope, $state, $stateParams, ProductFactory){
-          $scope.selected = $stateParams.letter;
-          ProductFactory.fetchByLetter($stateParams.letter)
-            .then(function(products){
-              $scope.items = products;
-            });
-          ProductFactory.getMap()
-            .then(function(map){
-              $scope.map = map;
-            });
-          $scope.onLetter = function(letter){
-            $state.go('products', { letter: letter });
-          };
-        }
-      })
-      .state('employees', {
-        url: '/employees/:letter?',
-        templateUrl: '/browser/templates/employees.html',
-        controller: function($scope, $state, $stateParams, EmployeeFactory){
-          $scope.selected = $stateParams.letter;
-          EmployeeFactory.fetchByLetter($stateParams.letter)
-            .then(function(employees){
-              $scope.items = employees;
-            });
-          EmployeeFactory.getMap()
-            .then(function(map){
-              $scope.map = map;
-            });
-          $scope.onLetter = function(letter){
-            $state.go('employees', { letter: letter });
-          };
-        }
-      });
-  })
-  .factory('ProductFactory', function($q, FirstLetterMapper){
-    var _items = [
-      { name: 'Foo' },
-      { name: 'Bar' },
-      { name: 'Bazz' },
-    ];
+  .factory('ProductFactory', function($http){
     return {
       fetchByLetter: function(letter){
-        var dfd = $q.defer();
-        dfd.resolve(_items.filter(function(item){
-          return !letter || item.name[0] === letter;
-        }));
-        return dfd.promise;
+        var url = '/api/products/' + (letter ? letter : '');
+        return $http.get(url).
+          then(function(result){
+            return result.data;
+          });
       },
       getMap: function(){
-        var dfd = $q.defer();
-        dfd.resolve(FirstLetterMapper(_items));
-        return dfd.promise;
+        return $http.get('/api/products/map')
+          .then(function(result){
+            return result.data;
+          });
       }
     };
   })
-  .factory('EmployeeFactory', function($q, FirstLetterMapper){
-    var _employees = [
-      { name: 'Moe' },
-      { name: 'Larry' },
-      { name: 'Curly' },
-    ];
+  .factory('EmployeeFactory', function($http){
     return {
       fetchByLetter: function(letter){
-        var dfd = $q.defer();
-        dfd.resolve(_employees.filter(function(employee){
-          return !letter || employee.name[0] === letter;
-        }));
-        return dfd.promise;
+        var url = '/api/employees/' + (letter ? letter : '');
+        return $http.get(url).
+          then(function(result){
+            return result.data;
+          });
       },
       getMap: function(){
-        var dfd = $q.defer();
-        dfd.resolve(FirstLetterMapper(_employees));
-        return dfd.promise;
+        return $http.get('/api/employees/map')
+          .then(function(result){
+            return result.data;
+          });
       }
-    };
-  })
-  .factory('FirstLetterMapper', function(){
-    return function(items){
-        return items.reduce(function(memo, item){
-          memo[item.name[0]] = true;
-          return memo;
-        }, {});
     };
   })
   .directive('nwindFilter', function(){
