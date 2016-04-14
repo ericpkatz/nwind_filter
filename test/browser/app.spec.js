@@ -1,5 +1,4 @@
 describe('app', function(){
-  beforeEach(module('app'));
 
   describe('the app exists', function(){
     it('exists', function(){
