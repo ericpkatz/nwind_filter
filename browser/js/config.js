@@ -23,11 +23,13 @@ angular.module('app')
       .state('products.letter', {
         url: '/:letter',
         templateUrl: '/browser/templates/_products.html',
-        controller: function($scope, $stateParams, ProductFactory){
-          ProductFactory.fetchByLetter($stateParams.letter)
-            .then(function(products){
-              $scope.items = products;
-          });
+        resolve: {
+          items: function(ProductFactory, $stateParams){
+            return ProductFactory.fetchByLetter($stateParams.letter);
+          }
+        },
+        controller: function($scope, items){
+          $scope.items = items;
         }
       })
       .state('employees', {
@@ -48,11 +50,13 @@ angular.module('app')
       .state('employees.letter', {
         url: '/:letter',
         templateUrl: '/browser/templates/_employees.html',
-        controller: function($scope, $stateParams, EmployeeFactory){
-          EmployeeFactory.fetchByLetter($stateParams.letter)
-            .then(function(employees){
-              $scope.items = employees;
-          });
+        resolve: {
+          items: function($stateParams, EmployeeFactory){
+            return EmployeeFactory.fetchByLetter($stateParams.letter);
+          }
+        },
+        controller: function($scope, items){
+          $scope.items = items;
         }
       });
   });
