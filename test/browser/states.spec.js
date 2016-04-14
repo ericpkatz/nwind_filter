@@ -2,7 +2,6 @@ describe('states', function(){
   describe('products', function(){
     var state;
     beforeEach(function(){
-      that = this;
       state = $state.get('products');
     });
 
